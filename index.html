@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portal de Documentação de APIs do Hive Engine - Acesse endpoints, exemplos de código e recursos para desenvolvedores.">
+    <title>Hive Engine API Developer Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;700&family=IBM+Plex+Serif:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo-section">
+                <img src="assets/placeholder.svg" alt="Hive Engine Logo" class="logo">
+                <h1 class="site-title">Hive Engine API Portal</h1>
+            </div>
+            <nav class="nav">
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+                <input type="text" id="search-input" class="search-input" placeholder="Buscar endpoints...">
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <h3 class="nav-title">SMT API</h3>
+                    <ul class="nav-list">
+                        <li><a href="#smt-state" class="nav-link">Estado e Configuração</a></li>
+                        <li><a href="#smt-feed" class="nav-link">Feed e Discussões</a></li>
+                        <li><a href="#smt-account" class="nav-link">Conta e Conteúdo</a></li>
+                    </ul>
+                </div>
+                <div class="nav-section">
+                    <h3 class="nav-title">JSON-RPC API</h3>
+                    <ul class="nav-list">
+                        <li><a href="#jsonrpc-blockchain" class="nav-link">Blockchain</a></li>
+                        <li><a href="#jsonrpc-contracts" class="nav-link">Contratos</a></li>
+                    </ul>
+                </div>
+                <div class="nav-section">
+                    <h3 class="nav-title">History API</h3>
+                    <ul class="nav-list">
+                        <li><a href="#history-account" class="nav-link">Account History</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="hero-content">
+                    <h2>Bem-vindo ao Hive Engine API Portal</h2>
+                    <p>Documentação completa e interativa para integrar com as APIs do Hive Engine. Explore endpoints, exemplos de código e recursos para desenvolvedores.</p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary" onclick="document.getElementById('smt-state').scrollIntoView({behavior: 'smooth'})">Começar</button>
+                        <a href="#jsonrpc-blockchain" class="btn btn-secondary">Documentação</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SMT API Section -->
+            <section id="smt-state" class="api-section">
+                <h2>SMT API (enginerpc.com)</h2>
+                <p class="section-description">A SMT API é um serviço crucial para a indexação de comentários e a gestão de interações sociais relacionadas a tokens na blockchain Hive.</p>
+                
+                <h3>Endpoints de Estado e Configuração</h3>
+                <div class="endpoints-grid">
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="method-badge get">GET</span>
+                            <span class="endpoint-path">/state</span>
+                        </div>
+                        <p class="endpoint-description">Retorna o estado atual do sincronizador de blocos da SMT API.</p>
+                        <div class="endpoint-details">
+                            <strong>Parâmetros:</strong> Nenhum
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                            </div>
+                            <pre><code class="language-bash">curl https://smt-api.enginerpc.com/state</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="method-badge get">GET</span>
+                            <span class="endpoint-path">/info</span>
+                        </div>
+                        <p class="endpoint-description">Fornece informações sobre o pool de recompensas de um token específico.</p>
+                        <div class="endpoint-details">
+                            <strong>Parâmetros:</strong>
+                            <ul>
+                                <li><code>token</code> (obrigatório): Símbolo do token (ex: BYTE, BEE)</li>
+                            </ul>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                            </div>
+                            <pre><code class="language-bash">curl https://smt-api.enginerpc.com/info?token=BYTE</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="method-badge get">GET</span>
+                            <span class="endpoint-path">/config</span>
+                        </div>
+                        <p class="endpoint-description">Retorna as configurações de um token, como o ID do pool de recompensas.</p>
+                        <div class="endpoint-details">
+                            <strong>Parâmetros:</strong>
+                            <ul>
+                                <li><code>token</code> (opcional): Símbolo do token</li>
+                            </ul>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                            </div>
+                            <pre><code class="language-bash">curl https://smt-api.enginerpc.com/config?token=BYTE</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Feed and Discussions Section -->
+            <section id="smt-feed" class="api-section">
+                <h3>Endpoints de Feed e Discussões</h3>
+                <p class="section-description">Estes endpoints permitem a recuperação de diferentes tipos de feeds e discussões, com opções de filtragem e paginação.</p>
+                
+                <div class="endpoints-grid">
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="method-badge get">GET</span>
+                            <span class="endpoint-path">/get_feed</span>
+                        </div>
+                        <p class="endpoint-description">Retorna o feed de um usuário, incluindo posts e reblogs.</p>
+                        <div class="endpoint-details">
+                            <strong>Parâmetros:</strong>
+                            <ul>
+                                <li><code>token</code> (obrigatório): Símbolo do token</li>
+                                <li><code>tag</code> (obrigatório): Nome da conta do usuário</li>
+                                <li><code>limit</code> (opcional, padrão: 20): Número máximo de posts</li>
+                                <li><code>include_reblogs</code> (opcional, padrão: true): Incluir reblogs</li>
+                            </ul>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                            </div>
+                            <pre><code class="language-bash">curl "https://smt-api.enginerpc.com/get_feed?limit=20&tag=faireye&token=BYTE&include_reblogs=true"</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="method-badge get">GET</span>
+                            <span class="endpoint-path">/get_discussions_by_created</span>
+                        </div>
+                        <p class="endpoint-description">Retorna discussões ordenadas pela data de criação.</p>
+                        <div class="endpoint-details">
+                            <strong>Parâmetros:</strong>
+                            <ul>
+                                <li><code>token</code> (obrigatório): Símbolo do token</li>
+                                <li><code>limit</code> (opcional, padrão: 20): Número máximo de posts</li>
+                                <li><code>tag</code> (opcional): Filtrar por tag</li>
+                            </ul>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                            </div>
+                            <pre><code class="language-bash">curl "https://smt-api.enginerpc.com/get_discussions_by_created?limit=200&token=BYTE"</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="method-badge get">GET</span>
+                            <span class="endpoint-path">/get_discussions_by_trending</span>
+                        </div>
+                        <p class="endpoint-description">Retorna discussões em alta, baseadas em um algoritmo de pontuação.</p>
+                        <div class="endpoint-details">
+                            <strong>Parâmetros:</strong>
+                            <ul>
+                                <li><code>token</code> (obrigatório): Símbolo do token</li>
+                                <li><code>limit</code> (opcional, padrão: 20): Número máximo de posts</li>
+                            </ul>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                            </div>
+                            <pre><code class="language-bash">curl "https://smt-api.enginerpc.com/get_discussions_by_trending?token=BEE"</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="method-badge get">GET</span>
+                            <span class="endpoint-path">/get_discussions_by_hot</span>
+                        </div>
+                        <p class="endpoint-description">Retorna discussões quentes, baseadas em um algoritmo de pontuação.</p>
+                        <div class="endpoint-details">
+                            <strong>Parâmetros:</strong>
+                            <ul>
+                                <li><code>token</code> (obrigatório): Símbolo do token</li>
+                                <li><code>limit</code> (opcional, padrão: 20): Número máximo de posts</li>
+                            </ul>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                            </div>
+                            <pre><code class="language-bash">curl "https://smt-api.enginerpc.com/get_discussions_by_hot?token=BEE"</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="method-badge get">GET</span>
+                            <span class="endpoint-path">/get_discussions_by_promoted</span>
+                        </div>
+                        <p class="endpoint-description">Retorna discussões promovidas.</p>
+                        <div class="endpoint-details">
+                            <strong>Parâmetros:</strong>
+                            <ul>
+                                <li><code>token</code> (obrigatório): Símbolo do token</li>
+                                <li><code>limit</code> (opcional, padrão: 20): Número máximo de posts</li>
+                            </ul>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                            </div>
+                            <pre><code class="language-bash">curl "https://smt-api.enginerpc.com/get_discussions_by_promoted?token=BEE"</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="method-badge get">GET</span>
+                            <span class="endpoint-path">/get_discussions_by_comments</span>
+                        </div>
+                        <p class="endpoint-description">Retorna comentários feitos por um usuário.</p>
+                        <div class="endpoint-details">
+                            <strong>Parâmetros:</strong>
+                            <ul>
+                                <li><code>token</code> (obrigatório): Símbolo do token</li>
+                                <li><code>tag</code> (obrigatório): Nome da conta</li>
+                                <li><code>limit</code> (opcional, padrão: 20): Número máximo de posts</li>
+                            </ul>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                            </div>
+                            <pre><code class="language-bash">curl "https://smt-api.enginerpc.com/get_discussions_by_comments?limit=200&token=BYTE"</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="method-badge get">GET</span>
+                            <span class="endpoint-path">/get_discussions_by_replies</span>
+                        </div>
+                        <p class="endpoint-description">Retorna respostas recebidas por um usuário.</p>
+                        <div class="endpoint-details">
+                            <strong>Parâmetros:</strong>
+                            <ul>
+                                <li><code>token</code> (obrigatório): Símbolo do token</li>
+                                <li><code>tag</code> (obrigatório): Nome da conta</li>
+                                <li><code>limit</code> (opcional, padrão: 20): Número máximo de posts</li>
+                            </ul>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                            </div>
+                            <pre><code class="language-bash">curl "https://smt-api.enginerpc.com/get_discussions_by_replies?limit=20&tag=faireye&token=BYTE"</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Account and Content Section -->
+            <section id="smt-account" class="api-section">
+                <h3>Endpoints de Conta e Conteúdo Específico</h3>
+                
+                <div class="endpoints-grid">
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="method-badge get">GET</span>
+                            <span class="endpoint-path">/@&lt;account&gt;</span>
+                        </div>
+                        <p class="endpoint-description">Retorna o saldo e outros dados da conta para um token específico.</p>
+                        <div class="endpoint-details">
+                            <strong>Parâmetros:</strong>
+                            <ul>
+                                <li><code>token</code> (opcional): Símbolo do token</li>
+                            </ul>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                            </div>
+                            <pre><code class="language-bash">curl "https://smt-api.enginerpc.com/@sagarkothari88?token=BYTE"</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="method-badge get">GET</span>
+                            <span class="endpoint-path">/@&lt;account&gt;/&lt;permlink&gt;</span>
+                        </div>
+                        <p class="endpoint-description">Retorna detalhes de um post específico, incluindo votos ativos.</p>
+                        <div class="endpoint-details">
+                            <strong>Parâmetros:</strong>
+                            <ul>
+                                <li><code>token</code> (opcional): Símbolo do token</li>
+                            </ul>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                            </div>
+                            <pre><code class="language-bash">curl "https://smt-api.enginerpc.com/@sagarkothari88/cc8a12ab?token=BYTE"</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="method-badge get">GET</span>
+                            <span class="endpoint-path">/get_account_history</span>
+                        </div>
+                        <p class="endpoint-description">Retorna o histórico de transações de uma conta para um token específico.</p>
+                        <div class="endpoint-details">
+                            <strong>Parâmetros:</strong>
+                            <ul>
+                                <li><code>account</code> (obrigatório): Nome da conta</li>
+                                <li><code>token</code> (opcional): Símbolo do token</li>
+                                <li><code>limit</code> (opcional, padrão: 100): Número máximo de transações</li>
+                                <li><code>offset</code> (opcional, padrão: 0): Deslocamento para paginação</li>
+                            </ul>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                            </div>
+                            <pre><code class="language-bash">curl "https://smt-api.enginerpc.com/get_account_history?account=faireye&token=BYTE&limit=30&offset=0"</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="method-badge get">GET</span>
+                            <span class="endpoint-path">/get_staked_accounts</span>
+                        </div>
+                        <p class="endpoint-description">Retorna uma lista de contas com tokens staked.</p>
+                        <div class="endpoint-details">
+                            <strong>Parâmetros:</strong>
+                            <ul>
+                                <li><code>token</code> (obrigatório): Símbolo do token</li>
+                            </ul>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                            </div>
+                            <pre><code class="language-bash">curl "https://smt-api.enginerpc.com/get_staked_accounts?token=BEE"</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- JSON-RPC API Section -->
+            <section id="jsonrpc-blockchain" class="api-section">
+                <h2>Hive Engine JSON-RPC API</h2>
+                <p class="section-description">Esta é a API principal para interagir com os smart contracts do Hive Engine. Ela permite a execução de métodos RPC para consultar o estado da blockchain e dos contratos.</p>
+                
+                <h3>Endpoints Principais</h3>
+                
+                <div class="endpoints-grid">
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="method-badge post">POST</span>
+                            <span class="endpoint-path">/blockchain</span>
+                        </div>
+                        <p class="endpoint-description">Consulta informações sobre os blocos da sidechain.</p>
+                        <div class="endpoint-details">
+                            <strong>Métodos RPC:</strong>
+                            <ul>
+                                <li><code>getLatestBlockInfo()</code>: Obtém o último bloco</li>
+                                <li><code>getBlockInfo(blockNumber)</code>: Obtém informações de um bloco específico</li>
+                            </ul>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                            </div>
+                            <pre><code class="language-bash">curl -X POST https://api.hive-engine.com/rpc/blockchain \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "getLatestBlockInfo",
+    "id": 1
+  }'</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="method-badge post">POST</span>
+                            <span class="endpoint-path">/contracts</span>
+                        </div>
+                        <p class="endpoint-description">Permite interagir com os smart contracts do Hive Engine (tokens, mercado, etc).</p>
+                        <div class="endpoint-details">
+                            <strong>Métodos RPC:</strong>
+                            <ul>
+                                <li><code>find(contract, table, query)</code>: Encontra documentos em uma tabela</li>
+                                <li><code>findOne(contract, table, query)</code>: Encontra um único documento</li>
+                            </ul>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                            </div>
+                            <pre><code class="language-bash">curl -X POST https://api.hive-engine.com/rpc/contracts \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "find",
+    "params": {
+      "contract": "tokens",
+      "table": "tokens",
+      "query": {"symbol": "BEE"}
+    },
+    "id": 1
+  }'</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- History API Section -->
+            <section id="history-account" class="api-section">
+                <h2>History API (history.hive-engine.com)</h2>
+                <p class="section-description">A History API fornece um histórico detalhado de transações para contas e tokens específicos.</p>
+                
+                <div class="endpoints-grid">
+                    <div class="endpoint-card">
+                        <div class="endpoint-header">
+                            <span class="method-badge get">GET</span>
+                            <span class="endpoint-path">/accountHistory</span>
+                        </div>
+                        <p class="endpoint-description">Obtém o histórico de transações de uma conta para um token específico.</p>
+                        <div class="endpoint-details">
+                            <strong>Parâmetros:</strong>
+                            <ul>
+                                <li><code>account</code> (obrigatório): Nome da conta</li>
+                                <li><code>symbol</code> (opcional): Símbolo do token</li>
+                                <li><code>limit</code> (opcional, padrão: 500): Número máximo de transações</li>
+                                <li><code>offset</code> (opcional, padrão: 0): Deslocamento para paginação</li>
+                                <li><code>type</code> (opcional): Tipo de transação (ex: user, contract)</li>
+                            </ul>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-language">bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                            </div>
+                            <pre><code class="language-bash">curl "https://history.hive-engine.com/accountHistory?account=faireye&symbol=BYTE&limit=30&offset=0"</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="footer-content">
+                    <p>&copy; 2026 Hive Engine API Portal. Documentação completa para desenvolvedores.</p>
+                    <p>Referências: <a href="https://github.com/hive-engine/distribution-engine-smt" target="_blank">SMT API</a> | <a href="https://github.com/hive-engine/hivesmartcontracts-wiki" target="_blank">JSON-RPC API</a> | <a href="https://github.com/hive-engine/ssc_tokens_history" target="_blank">History API</a></p>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
