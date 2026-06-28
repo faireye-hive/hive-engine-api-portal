@@ -1,6 +1,6 @@
 ---
 name: hive-engine-api
-description: Reference for the Hive Engine sidechain (the second-layer token/NFT/market platform built on top of the Hive blockchain). Use this skill whenever the user mentions "Hive Engine", "SMT API", "enginerpc", token symbols like BEE/BYTE/SWAP.HIVE, staking/delegating/unstaking Hive Engine tokens, the Hive Engine internal DEX/market (buyBook, sellBook, metrics, tradesHistory), Hive Engine NFTs, the JSON-RPC contracts API (api.hive-engine.com), the History API (history.hive-engine.com), or building custom_json / transfer payloads to interact with Hive Engine contracts. Also trigger this for Hive Keychain integration code (requestCustomJson, requestTransfer) when the target is a Hive Engine contract action, and for any dashboard, bot, or app that reads balances, market data, or transaction history from Hive Engine. Don't confuse this with the base Hive blockchain API (condenser/bridge calls like get_discussion, get_accounts) — use this skill specifically for the Hive Engine sidechain layer.
+description: Reference for the Hive Engine sidechain (the second-layer token/NFT/market platform on Hive). Use whenever the user mentions "Hive Engine", "SMT API", "scot-api", "enginerpc", tribe/community tokens (POB, LEO, CTP, VYB, PAL, etc.), token symbols like BEE/BYTE/SWAP.HIVE, staking/delegating/unstaking Hive Engine tokens, the internal DEX/market (buyBook, sellBook, metrics, tradesHistory), Hive Engine NFTs, the JSON-RPC contracts API (api.hive-engine.com), the History API (history.hive-engine.com), or building custom_json/transfer payloads for Hive Engine contracts. Also trigger for Hive Keychain code (requestCustomJson, requestTransfer) targeting a Hive Engine action, and for dashboards/bots reading balances, market data, or history from Hive Engine. Don't confuse with base Hive APIs (condenser/bridge calls like get_discussion, get_accounts) — this is for the Hive Engine sidechain layer specifically.
 ---
 
 # Hive Engine API Reference
@@ -14,11 +14,12 @@ Use this skill as a lookup reference: find the right API/contract/table/action b
 | I want to... | Use |
 |---|---|
 | Read a balance, market price, NFT data, or any contract state | **JSON-RPC API** (`api.hive-engine.com/rpc/contracts`) |
-| Read a user's social feed/discussions tied to a token (SMT-flavored Hive posts) | **SMT API** (`smt-api.enginerpc.com`) |
+| Read a user's social feed/discussions tied to a **modern SMT tribe** (BEE, VYB, PAL, VOTE, MEME, CENT, BYTE, SCP...) | **SMT API** (`smt-api.enginerpc.com`) |
+| Read a user's social feed/discussions tied to a **legacy/pre-SMT tribe** (POB, LEO, CCC, CTP, PAY, ARCHON, SPT, PHOTO, PIMP...) | **scot-api** (`scot-api.hive-engine.com`) — see §2.1 |
 | Get a deep, paginated transaction history for an account/token | **History API** (`history.hive-engine.com`) |
 | Change state — transfer, stake, buy/sell, issue NFT, etc. | **Broadcast a transaction** (`custom_json` or `transfer` with a Hive Engine JSON payload), normally **signed via Hive Keychain** |
 
-If the user is building a dashboard (balances, market metrics, trade history) → JSON-RPC `find`/`findOne` + History API. If they're building something that posts/reads token-gated content → SMT API. If they're building anything that lets a user click a button to actually do something on-chain → Keychain section below.
+If the user is building a dashboard (balances, market metrics, trade history) → JSON-RPC `find`/`findOne` + History API. If they're building something that posts/reads token-gated content → SMT API **or** scot-api depending on the tribe (§2.1 — check which one first, they are not interchangeable). If they're building anything that lets a user click a button to actually do something on-chain → Keychain section below.
 
 ---
 
@@ -192,9 +193,46 @@ For reading NFT instances/config, query the `nft` contract's per-symbol tables t
 
 ---
 
-## 2. SMT API (`smt-api.enginerpc.com`)
+## 2. Social/discussion APIs: SMT API vs. scot-api — pick the right one
 
-Indexes Hive **posts/comments** tied to a token context (rewards, feeds, discussions). All `GET`, base URL `https://smt-api.enginerpc.com/`.
+There are **two parallel, non-interchangeable** APIs for tribe content, because not every Hive community token is technically an SMT. Calling the wrong one for a given tribe returns empty/wrong results, not an error — always check which bucket the tribe is in first.
+
+| | **SMT API** (modern) | **scot-api** (legacy) |
+|---|---|---|
+| Base URL | `https://smt-api.enginerpc.com/` | `https://scot-api.hive-engine.com/` |
+| Tribes | BEE, VYB, PAL, VOTE, MEME, CENT, BYTE, SCP, ... | POB, LEO, CCC, CTP, PAY, ARCHON, SPT, PHOTO, PIMP, ... |
+| Why split | These tribes are real SMTs | These tribes predate SMT / never migrated — they run on the older "SCOT" indexer instead |
+
+This list of tribes isn't exhaustive — if you're not sure which bucket a given token falls into, just try `/info?token=SYMBOL` against scot-api first (most active community tokens are legacy/SCOT), and fall back to the SMT API if it comes back empty.
+
+### 2.1 scot-api quirk: `hive=1`
+
+Several legacy tribes predate Hive itself (they launched back on Steem). For account/post lookups, scot-api needs an explicit `hive=1` query param to tell it you want the Hive-chain version of the data, not the old Steem one. This parameter is scot-api-specific — the modern SMT API doesn't need it (SMT tribes only ever existed on Hive).
+
+```bash
+curl "https://scot-api.hive-engine.com/@faireye?token=POB&hive=1"
+curl "https://scot-api.hive-engine.com/@ahmadmangazap/55lq34sjg6jflk7yh0io34?token=POB&hive=1"
+```
+
+When in doubt for any `@account` or `@account/permlink` lookup against scot-api, include `hive=1`.
+
+### 2.2 Endpoint parity
+
+Both APIs expose the same shape of endpoints (`/info`, `/config`, `/state`, `/get_feed`, `/get_discussions_by_*`, `/get_trending_tags`, `/@<account>`, `/@<account>/<permlink>`, `/get_account_history`) — same params, same response shape, just swap the base URL and remember `hive=1` for scot-api. Confirmed differences:
+
+- **`get_follow_count` / `get_following`** — exist on scot-api but are **outdated/unreliable**; don't depend on them for anything that needs to be current. (Unconfirmed whether the SMT API's versions are more reliable — verify before relying on either.)
+- **`get_staked_accounts`** — exists on the SMT API; **not available** on scot-api. For legacy tribes, get staked balances from the JSON-RPC `tokens.balances` table (§1.3, `stake` field) instead.
+
+```bash
+# Legacy tribe (POB) — note the different base URL and hive=1
+curl "https://scot-api.hive-engine.com/get_discussions_by_trending?limit=10&token=POB"
+curl "https://scot-api.hive-engine.com/get_discussions_by_blog?tag=faireye&limit=10&include_reblogs=true&token=POB"
+
+# Modern tribe (BEE) — SMT API, no hive param needed
+curl "https://smt-api.enginerpc.com/get_discussions_by_trending?token=BEE&limit=20"
+```
+
+### 2.3 Full endpoint reference (applies to both, base URL + `hive=1` differ as above)
 
 | Endpoint | Required params | Notes |
 |---|---|---|
@@ -212,16 +250,12 @@ Indexes Hive **posts/comments** tied to a token context (rewards, feeds, discuss
 | `/get_discussions_by_comments` | `token`, `tag` | Comments made by an account |
 | `/get_discussions_by_replies` | `token`, `tag` | Replies received by an account |
 | `/get_trending_tags` | `token` | Trending tags, `limit` default 40 |
-| `/get_following` | `follower` | Follow list. `status` filters (`blog`, `ignore`); `hive=true` for Hive-only follows |
-| `/get_follow_count` | `account` | Follower/following counts |
-| `/@<account>` | optional `token` | Account balance/data |
-| `/@<account>/<permlink>` | optional `token` | Single post detail incl. active votes |
+| `/get_following` | `follower` | Follow list. SMT API only reliably; outdated on scot-api (§2.2) |
+| `/get_follow_count` | `account` | Follower/following counts. SMT API only reliably; outdated on scot-api (§2.2) |
+| `/@<account>` | optional `token` | Account balance/data. Add `hive=1` on scot-api |
+| `/@<account>/<permlink>` | optional `token` | Single post detail incl. active votes. Add `hive=1` on scot-api |
 | `/get_account_history` | `account` | Transaction history. `limit` default 100, `offset`, `type` (`user`/`contract`) |
-| `/get_staked_accounts?token=` | `token` | Accounts with staked balance |
-
-```bash
-curl "https://smt-api.enginerpc.com/get_discussions_by_trending?token=BEE&limit=20"
-```
+| `/get_staked_accounts?token=` | `token` | Accounts with staked balance. **SMT API only — not on scot-api** (§2.2) |
 
 ---
 
@@ -233,7 +267,14 @@ Deep, paginated **transaction** history (the NodeJS indexer). One endpoint:
 curl "https://history.hive-engine.com/accountHistory?account=faireye&symbol=BYTE&limit=30&offset=0"
 ```
 
-Params: `account` (required), `symbol` (optional — omit for all tokens), `limit` (default 500), `offset` (default 0), `type` (`user` or `contract`).
+Params: `account` (required), `symbol` (optional — omit for all tokens), `limit` (default 500), `offset` (default 0), `type` (`user` or `contract`), `ops` (optional — comma-separated list of operation names to filter by, e.g. only stake-related events).
+
+```bash
+# Only stake/delegation-related history for POB, instead of every operation type
+curl "https://history.hive-engine.com/accountHistory?account=faireye&limit=50&symbol=POB&ops=tokens_transfer,tokens_stake,tokens_delegate,tokens_unstakeStart,tokens_unstakeDone,tokens_cancelUnstake,tokens_undelegateStart,tokens_undelegateDone"
+```
+
+Known `ops` values (confirmed so far — there may be more for `market`/`nft` actions, unverified): `tokens_transfer`, `tokens_stake`, `tokens_delegate`, `tokens_unstakeStart`, `tokens_unstakeDone`, `tokens_cancelUnstake`, `tokens_undelegateStart`, `tokens_undelegateDone`.
 
 Prefer this over the JSON-RPC contract tables when you need **historical** transactions beyond current state — `tokens`/`market` tables via JSON-RPC only show current/open state (e.g. open orders), not the full history of what happened.
 
@@ -333,4 +374,5 @@ window.hive_keychain.requestTransfer(
 - **Pagination**: always pass `limit`/`offset` (JSON-RPC) or `offset` (History API) for anything that could grow unbounded (trade history, account history) — don't fetch-all-and-filter client-side.
 - **Caching**: market `metrics` and `tradesHistory` are good candidates for short-lived local caching (e.g. chunked by UTC day) since trade history before "today" never changes.
 - **Errors**: JSON-RPC errors come back as standard JSON-RPC 2.0 error objects (`{"error": {"code": ..., "message": ...}}`) — always check for an `error` key before reading `result`.
+- **Legacy tribe + need staked accounts?** `get_staked_accounts` doesn't exist on scot-api (§2.2). Query `tokens.balances` via JSON-RPC (§1.3) with `{ symbol: 'POB' }` and filter/sort by `stake` client-side instead.
 - **Never** put private keys in code or ask the user for them — Keychain (or HiveSigner, Hive Auth) is the way real apps get a user's signature.
